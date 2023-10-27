@@ -1,18 +1,18 @@
 "use client";
 
 import PokemonCard from "@/components/pokemon-card";
-import { capitalizeString } from "@/lib/capitalizeString";
-import { pokeapi } from "@/lib/pokeapi";
+import { NamedAPIResource, PokemonClient } from "pokenode-ts";
 import { useEffect, useState } from "react";
 
 export default function Home() {
-  const [pokemons, setPokemons] = useState([]);
+  const [pokemons, setPokemons] = useState<NamedAPIResource[]>([]);
 
   useEffect(() => {
     async function loadData() {
-      const response = await pokeapi.get("pokemon");
+      const pokeClient = new PokemonClient();
+      const response = await pokeClient.listPokemons();
 
-      setPokemons(response.data.results);
+      setPokemons(response.results);
     }
 
     loadData();
@@ -20,12 +20,8 @@ export default function Home() {
 
   return (
     <main className="p-2 grid grid-cols-3 gap-2">
-      {pokemons.map((pokemon: any, index) => (
-        <PokemonCard
-          key={pokemon.name}
-          id={index + 1}
-          pokemon={capitalizeString(pokemon.name)}
-        />
+      {pokemons.map((pokemon, index) => (
+        <PokemonCard key={pokemon.name} id={index + 1} pokemon={pokemon.name} />
       ))}
     </main>
   );
